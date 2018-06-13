@@ -7,9 +7,10 @@ import java.io.IOException;
  */
 public class Main {
     public static void main(String[] args) throws IOException {
-        FileConventor fileConventor = new FileToFileConventor(System.getProperty("user.dir"));
+        FileConventor fileConventor = new FileToFileConventor(System.getProperty("user.dir") + "\\Proba.epi");
         try {
             fileConventor.convert();
+            System.out.println("Обработка файла завершена!");
         } catch (Exception e) {
             e.printStackTrace();
         }

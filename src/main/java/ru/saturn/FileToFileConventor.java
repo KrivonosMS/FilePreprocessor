@@ -1,5 +1,6 @@
 package ru.saturn;
 
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -14,48 +15,40 @@ import java.util.stream.Collectors;
  * Created by Admin on 07.06.2018.
  */
 public class FileToFileConventor implements FileConventor {
-    private final String pathFileIn;
-    private final String pathFileOut;
+    private final String fileInPath;
+    private final String fileOutPath;
 
+    public FileToFileConventor(File file) {
+        this(file.getPath());
+    }
 
     public FileToFileConventor(String path) {
-        this.pathFileIn = getPathIn(path);
-        this.pathFileOut = getPathOut(path);
-
-        checkInputFile();
+        this.fileInPath = path;
+        this.fileOutPath = createPath();
+        checkInputFile(path);
     }
 
-    private String getPathIn(String path) {
-        return path +  "/" + "proba.epi";
-    }
-
-    private String getPathOut(String path) {
+    private String createPath() {
         SimpleDateFormat format = new SimpleDateFormat("dd_MM_YYYY HH_mm_ss");
-        return path + "/" + "proba" + " " + format.format(new Date()) + ".epi";
+        String dir = System.getProperty("user.dir");
+        return dir + "/" + "proba" + " " + format.format(new Date()) + ".epi";
     }
 
-    private void checkInputFile() {
-        if (Files.notExists(Paths.get(pathFileIn))) throw new IllegalArgumentException("Файл " + pathFileIn + " не найден!");
+    private void checkInputFile(String path) {
+        if (Files.notExists(Paths.get(path))) throw new IllegalArgumentException("Файл " + path + " не найден!");
     }
 
     @Override
     public void convert() throws Exception {
-        List<String> lineList = Files.lines(Paths.get(pathFileIn), StandardCharsets.UTF_8).collect(Collectors.toList());
+        List<String> lineList = Files.lines(Paths.get(fileInPath), StandardCharsets.UTF_8).collect(Collectors.toList());
 
         String in1_HighFlow = getConstValue(lineList, "In1_HighFlow");
         String in2_HighFlow = getConstValue(lineList, "In2_HighFlow");
         String dT = getConstValue(lineList, "dT");
 
         List<String> lineListNew = convert(lineList, in1_HighFlow, in2_HighFlow, dT);
-//        System.out.println(in1_HighFlow);
-//        System.out.println(in2_HighFlow);
-//        System.out.println(dT);
-//        System.out.println(lineListNew.get(28));
-//        System.out.println(lineListNew.get(62));
-//        System.out.println(lineListNew.get(70));
-//        System.out.println(lineListNew.get(72));
 
-        Files.write(Paths.get(pathFileOut), lineListNew, StandardCharsets.UTF_8);
+        Files.write(Paths.get(fileOutPath), lineListNew, StandardCharsets.UTF_8);
     }
 
     private List<String> convert(List<String> lineList, String in1_HighFlow, String in2_HighFlow, String dT) {
