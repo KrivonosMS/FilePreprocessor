@@ -7,6 +7,8 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -15,6 +17,7 @@ import java.util.stream.Collectors;
  * Created by Admin on 07.06.2018.
  */
 public class FileToFileConventor implements FileConventor {
+    private final Logger Log = Logger.getLogger(this.getClass().getName());
     private final String fileInPath;
     private final String fileOutPath;
 
@@ -35,11 +38,13 @@ public class FileToFileConventor implements FileConventor {
     }
 
     private void checkInputFile(String path) {
+        Log.log(Level.INFO, "Путь к файлу для конвертации: " + path);
         if (Files.notExists(Paths.get(path))) throw new IllegalArgumentException("Файл " + path + " не найден!");
     }
 
     @Override
     public void convert() throws Exception {
+        Log.log(Level.INFO, "Начало конвертации");
         List<String> lineList = Files.lines(Paths.get(fileInPath), StandardCharsets.UTF_8).collect(Collectors.toList());
 
         String in1_HighFlow = getConstValue(lineList, "In1_HighFlow");
@@ -49,6 +54,7 @@ public class FileToFileConventor implements FileConventor {
         List<String> lineListNew = convert(lineList, in1_HighFlow, in2_HighFlow, dT);
 
         Files.write(Paths.get(fileOutPath), lineListNew, StandardCharsets.UTF_8);
+        Log.log(Level.INFO, " Конец конвертации");
     }
 
     private List<String> convert(List<String> lineList, String in1_HighFlow, String in2_HighFlow, String dT) {
